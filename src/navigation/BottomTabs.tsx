@@ -1,11 +1,12 @@
+import {BottomTabCustom} from '@components';
 import {
   BottomTabBarProps,
   createBottomTabNavigator,
 } from '@react-navigation/bottom-tabs';
-import {RouteAuthEnum, RouteBottomTabsEnum} from './route';
+import CartScreen from '@screens/cart';
+import ProductsScreen from '@screens/products';
 import Test from '@screens/test';
-import {BottomTabCustom} from '@components';
-import FeedScreen from '@screens/feed';
+import {RouteBottomTabsEnum} from './route';
 
 const Tab = createBottomTabNavigator();
 
@@ -20,13 +21,16 @@ const BottomTabs = () => {
       screenOptions={{
         headerShown: false,
       }}
-      initialRouteName={RouteBottomTabsEnum.FeedScreen}>
+      initialRouteName={RouteBottomTabsEnum.ProductScreen}>
       <Tab.Screen
-        name={RouteBottomTabsEnum.FeedScreen}
-        component={FeedScreen}
+        name={RouteBottomTabsEnum.ProductScreen}
+        component={ProductsScreen}
       />
-      <Tab.Screen name={RouteBottomTabsEnum.DeliciousScreen} component={Test} />
-      <Tab.Screen name={RouteBottomTabsEnum.AccountScreen} component={Test} />
+      <Tab.Screen
+        name={RouteBottomTabsEnum.CartScreen}
+        component={CartScreen}
+      />
+      <Tab.Screen name={RouteBottomTabsEnum.ContactScreen} component={Test} />
     </Tab.Navigator>
   );
 };

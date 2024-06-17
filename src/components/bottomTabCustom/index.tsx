@@ -16,6 +16,8 @@ import Animated, {
   withTiming,
 } from 'react-native-reanimated';
 
+import Icon from 'react-native-vector-icons/Ionicons';
+
 interface IProps {
   index: number;
 }
@@ -24,19 +26,25 @@ const BottomTabCustom: FC<IProps> = ({index}) => {
   const tabs = useMemo(
     () => [
       {
-        name: 'Feed',
-        icon: (color: string) => <FeedIcon color={color} />,
-        screen: RouteBottomTabsEnum.FeedScreen,
+        name: 'Products',
+        icon: (color: string) => (
+          <Icon name={'bag-handle-outline'} size={24} color={color} />
+        ),
+        screen: RouteBottomTabsEnum.ProductScreen,
       },
       {
-        name: 'Món ngon',
-        icon: (color: string) => <FireIcon color={color} />,
-        screen: RouteBottomTabsEnum.DeliciousScreen,
+        name: 'Cart',
+        icon: (color: string) => (
+          <Icon name={'cart-outline'} size={24} color={color} />
+        ),
+        screen: RouteBottomTabsEnum.CartScreen,
       },
       {
-        name: 'Cá nhân',
-        icon: (color: string) => <ProfileIcon color={color} />,
-        screen: RouteBottomTabsEnum.AccountScreen,
+        name: 'Contact',
+        icon: (color: string) => (
+          <Icon name={'call-outline'} size={24} color={color} />
+        ),
+        screen: RouteBottomTabsEnum.ContactScreen,
       },
     ],
     [],

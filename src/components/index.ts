@@ -1,6 +1,7 @@
 import Block from './block';
-import Text from './text';
-import Container from './container';
 import BottomTabCustom from './bottomTabCustom';
+import Button from './button';
+import Container from './container';
+import Text from './text';
 
-export {Text, Block, Container, BottomTabCustom};
+export {Block, BottomTabCustom, Button, Container, Text};

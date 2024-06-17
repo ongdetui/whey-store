@@ -8,6 +8,7 @@ const Colors = {
   bgButton: '#E1E1E1',
   subText: '#707070',
   bgBlur: '#2941811A',
+  redHolder: '#EF251B',
 };
 
 export default Colors;
