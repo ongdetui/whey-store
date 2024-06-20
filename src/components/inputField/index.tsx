@@ -82,7 +82,7 @@ const styles = StyleSheet.create({
   textLabel: {
     fontSize: getSize.m(15, 0.3),
     fontFamily: Font.Poppins_Medium,
-    color: Colors.white,
+    color: Colors.bluePrimary,
   },
   box: {
     height: getSize.m(56),

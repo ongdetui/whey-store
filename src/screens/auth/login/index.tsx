@@ -12,6 +12,12 @@ import MailIcon from '@assets/icons/MailIcon';
 import LockIcon from '@assets/icons/LockIcon';
 import NavigationService from '@navigation/navigationService';
 import {RouteAuthEnum, RouteBottomTabsEnum} from '@navigation/route';
+import {useState} from 'react';
+import {login} from '@services/auth.service';
+import {useDispatch} from 'react-redux';
+import {actionUpdateUser} from '@redux/slices/user.slice';
+import * as Keychain from 'react-native-keychain';
+import {useToastMessage} from '@hooks/useToastMessage';
 
 const validationSchema = Yup.object({
   email: Yup.string().required('Email is required').email('Email is not valid'),
@@ -19,13 +25,38 @@ const validationSchema = Yup.object({
 });
 
 const initialValues: LoginParams = {
-  email: __DEV__ ? 'ducphamvan0711@gmail.com' : '',
-  password: __DEV__ ? '123456aA@@' : '',
+  email: __DEV__ ? 'admin@gmail.com' : '',
+  password: __DEV__ ? '12345678' : '',
 };
 
 const LoginScreen = () => {
-  const handleSignIn = () => {
-    NavigationService.reset(RouteBottomTabsEnum.BottomTabs);
+  const [isLoading, setLoading] = useState<boolean>(false);
+  const dispatch = useDispatch();
+  const {showWarningTop, showSuccessTop} = useToastMessage();
+
+  const handleSignIn = async (values: LoginParams) => {
+    try {
+      setLoading(true);
+      const {data} = await login(values);
+
+      dispatch(actionUpdateUser(data.metadata.user));
+      await Keychain.setInternetCredentials(
+        'JWT_KEY',
+        'JWT_KEY',
+        data.metadata.tokens.accessToken,
+      );
+      await Keychain.setInternetCredentials(
+        'JWT_REFRESH_KEY',
+        'JWT_REFRESH_KEY',
+        data.metadata.tokens.refreshToken,
+      );
+      showSuccessTop('Đăng nhập thành công');
+      NavigationService.reset(RouteBottomTabsEnum.BottomTabs);
+    } catch (error) {
+      showWarningTop('Đăng nhập thất bại');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const {values, handleChange, errors, setFieldError, submitForm} =
@@ -71,7 +102,7 @@ const LoginScreen = () => {
             onChangeText={handleChangeValue('password')}
             isPassword
           />
-          <Button onPress={handleSignIn}>
+          <Button isLoading={isLoading} onPress={submitForm}>
             <Text style={styles.textSignIn}>Sign In</Text>
           </Button>
           <Block style={styles.footer}>

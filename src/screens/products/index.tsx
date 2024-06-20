@@ -8,12 +8,15 @@ import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
 import {keyExtractor} from 'utils/utils';
 import ItemProduct from './components/ItemProduct';
+import {useSelector} from 'react-redux';
+import {IRootState} from '@redux/stores';
+import {UserState} from '@redux/slices/user.slice';
 
 const ProductsScreen = () => {
   const {top} = useSafeAreaInsets();
+  const {email} = useSelector<IRootState, UserState>(state => state.user);
 
-  const renderItem = useCallback(({item}) => <ItemProduct 
-  url={item} />, []);
+  const renderItem = useCallback(({item}) => <ItemProduct url={item} />, []);
 
   return (
     <Container backgroundColor={Colors.bgBlur} edges={[]}>
@@ -23,7 +26,7 @@ const ProductsScreen = () => {
             <Block style={styles.header} paddingTop={top}>
               <Block>
                 <Text style={styles.textHello}>Hello,</Text>
-                <Text style={styles.textEmail}>ducphamvan0711@gmail.com</Text>
+                <Text style={styles.textEmail}>{email}</Text>
               </Block>
               <Icon
                 name={'person-circle-outline'}
@@ -60,7 +63,6 @@ const ProductsScreen = () => {
           'https://wheyshop.cdn.vccloud.vn/wp-content/uploads/2022/02/vitaxtrong-100-pure-creatine-5000-500g-280x280.webp',
           'https://wheyshop.cdn.vccloud.vn/wp-content/uploads/2016/10/biotech-hyper-mass-8-8lbs-4kg-280x280.webp',
           'https://wheyshop.cdn.vccloud.vn/wp-content/uploads/2016/10/pre-workout-the-curse-280x280.webp',
-         
         ]}
         renderItem={renderItem}
         numColumns={2}

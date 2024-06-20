@@ -1,27 +1,47 @@
-import {Block, Text} from '@components';
-import Container from '@components/container';
+import ToastNotify from '@components/toastNotify';
 import RootStack from '@navigation';
-import React from 'react';
-import {
-  SafeAreaView,
-  StatusBar,
-  StyleSheet,
-  useColorScheme,
-} from 'react-native';
+import {persistor, store} from '@redux/stores';
+import Colors from 'configs/colors';
+import {getSize} from 'configs/responsive';
+import React, {useCallback} from 'react';
+import {StyleSheet} from 'react-native';
 import {SafeAreaProvider} from 'react-native-safe-area-context';
-
-import {Colors} from 'react-native/Libraries/NewAppScreen';
+import {ToastProvider} from 'react-native-toast-notifications';
+import {ToastProps} from 'react-native-toast-notifications/lib/typescript/toast';
+import Icon from 'react-native-vector-icons/Ionicons';
+import {Provider} from 'react-redux';
+import {PersistGate} from 'redux-persist/integration/react';
 
 function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
-  };
+  const renderToast = useCallback(
+    (toastOptions: ToastProps) => <ToastNotify {...toastOptions} />,
+    [],
+  );
 
   return (
     <SafeAreaProvider>
-      <RootStack />
+      <Provider store={store}>
+        <PersistGate loading={null} persistor={persistor}>
+          <ToastProvider
+            renderToast={renderToast}
+            warningIcon={
+              <Icon
+                name={'alert-circle-outline'}
+                color={Colors.redHolder}
+                size={getSize.m(20)}
+              />
+            }
+            successIcon={
+              <Icon
+                name={'checkmark-circle-outline'}
+                color={'#01AB6F'}
+                size={getSize.m(20)}
+              />
+            }>
+            <RootStack />
+          </ToastProvider>
+        </PersistGate>
+      </Provider>
     </SafeAreaProvider>
   );
 }

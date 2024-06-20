@@ -4,7 +4,8 @@ export type LoginParams = {
 };
 
 export type SignUpParams = {
+  fullName: string;
   email: string;
   password: string;
   confirmPassword: string;
-}
+};

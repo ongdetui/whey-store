@@ -1,4 +1,6 @@
 import {Block, Text} from '@components';
+import NavigationService from '@navigation/navigationService';
+import {RouteAppEnum} from '@navigation/route';
 import Colors from 'configs/colors';
 import Font from 'configs/fonts';
 import {WIDTH_SCREEN, getSize} from 'configs/responsive';
@@ -12,8 +14,13 @@ interface IProps {
 }
 
 const ItemProduct: FC<IProps> = ({url}) => {
+  const handleItem = () =>
+    NavigationService.navigate(RouteAppEnum.DetailProductScreen);
   return (
-    <TouchableOpacity activeOpacity={0.5} style={styles.container}>
+    <TouchableOpacity
+      onPress={handleItem}
+      activeOpacity={0.5}
+      style={styles.container}>
       <FastImage
         source={{
           uri:

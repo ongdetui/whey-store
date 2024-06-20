@@ -4,8 +4,8 @@ import {
   createBottomTabNavigator,
 } from '@react-navigation/bottom-tabs';
 import CartScreen from '@screens/cart';
+import ContactScreen from '@screens/contact';
 import ProductsScreen from '@screens/products';
-import Test from '@screens/test';
 import {RouteBottomTabsEnum} from './route';
 
 const Tab = createBottomTabNavigator();
@@ -30,7 +30,10 @@ const BottomTabs = () => {
         name={RouteBottomTabsEnum.CartScreen}
         component={CartScreen}
       />
-      <Tab.Screen name={RouteBottomTabsEnum.ContactScreen} component={Test} />
+      <Tab.Screen
+        name={RouteBottomTabsEnum.ContactScreen}
+        component={ContactScreen}
+      />
     </Tab.Navigator>
   );
 };

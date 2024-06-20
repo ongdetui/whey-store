@@ -12,14 +12,20 @@ import {FormikHelpers, useFormik} from 'formik';
 import LockIcon from '@assets/icons/LockIcon';
 import NavigationService from '@navigation/navigationService';
 import {RouteAuthEnum} from '@navigation/route';
+import Icon from 'react-native-vector-icons/Ionicons';
+import {register} from '@services/auth.service';
+import {useState} from 'react';
+import {useToastMessage} from '@hooks/useToastMessage';
 
 const initialValues: SignUpParams = {
+  fullName: '',
   email: '',
   password: '',
   confirmPassword: '',
 };
 
 const validationSchema = Yup.object({
+  fullName: Yup.string().required('Full name is required'),
   email: Yup.string().required('Email is required').email('Email is not valid'),
   password: Yup.string()
     .required('Password is required')
@@ -31,22 +37,34 @@ const validationSchema = Yup.object({
 });
 
 const SignUpScreen = () => {
+  const {showWarningTop, showSuccessTop} = useToastMessage();
+  const [isLoading, setLoading] = useState<boolean>(false);
+
+  const handleSignUp = async (values: SignUpParams) => {
+    try {
+      setLoading(true);
+      await register(values);
+      showSuccessTop('Đăng ký tài khoản thành công');
+      NavigationService.navigate(RouteAuthEnum.SignUpSuccessScreen);
+    } catch (error) {
+      showWarningTop('Đăng ký tài khoản thất bại');
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const {values, handleChange, submitForm, errors, setFieldError} =
     useFormik<SignUpParams>({
       initialValues,
       validateOnBlur: false,
       validateOnChange: false,
       validationSchema,
-      onSubmit: () => {},
+      onSubmit: handleSignUp,
     });
 
   const handleChangeValue = (name: string) => (text: string) => {
     handleChange(name)(text);
     setFieldError(name, '');
-  };
-
-  const handleSignUp = () => {
-    NavigationService.navigate(RouteAuthEnum.SignUpSuccessScreen);
   };
 
   return (
@@ -58,6 +76,19 @@ const SignUpScreen = () => {
         </Text>
       </Block>
       <Block style={styles.form}>
+        <InputField
+          error={errors.fullName}
+          placeholder="Full name..."
+          leftIcon={
+            <Icon
+              name={'person-circle-outline'}
+              size={24}
+              color={Colors.mainText}
+            />
+          }
+          value={values.fullName}
+          onChangeText={handleChangeValue('fullName')}
+        />
         <InputField
           error={errors.email}
           placeholder="abc@email.com"
@@ -78,11 +109,11 @@ const SignUpScreen = () => {
           error={errors.confirmPassword}
           placeholder="Confirm Password"
           leftIcon={<LockIcon color={Colors.mainText} />}
-          value={values.password}
+          value={values.confirmPassword}
           onChangeText={handleChangeValue('confirmPassword')}
           isPassword
         />
-        <Button onPress={handleSignUp}>
+        <Button onPress={submitForm} isLoading={isLoading}>
           <Text style={styles.textSignIn}>Sign Up</Text>
         </Button>
         <Block style={styles.footer}>

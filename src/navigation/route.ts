@@ -11,9 +11,17 @@ export enum RouteBottomTabsEnum {
   ContactScreen = 'ContactScreen',
 }
 
+export enum RouteAppEnum {
+  FormPurchaseScreen = 'FormPurchaseScreen',
+  DetailProductScreen = 'DetailProductScreen',
+}
+
 export type RootStackParamList = {
   [RouteAuthEnum.LoginScreen]: {};
   [RouteAuthEnum.SignUpScreen]: {};
   [RouteAuthEnum.SignUpSuccessScreen]: {};
   [RouteBottomTabsEnum.BottomTabs]: {};
+  [RouteBottomTabsEnum.BottomTabs]: {};
+  [RouteAppEnum.FormPurchaseScreen]: {};
+  [RouteAppEnum.DetailProductScreen]: {};
 };
