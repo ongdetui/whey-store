@@ -18,6 +18,7 @@ import {useDispatch} from 'react-redux';
 import {actionUpdateUser} from '@redux/slices/user.slice';
 import * as Keychain from 'react-native-keychain';
 import {useToastMessage} from '@hooks/useToastMessage';
+import {listOrderList} from '@services/cart.service';
 
 const validationSchema = Yup.object({
   email: Yup.string().required('Email is required').email('Email is not valid'),
@@ -50,6 +51,14 @@ const LoginScreen = () => {
         'JWT_REFRESH_KEY',
         data.metadata.tokens.refreshToken,
       );
+      const {data: dataCart} = await listOrderList(data.metadata.user.id);
+
+      dispatch(
+        actionUpdateUser({
+          idCard: dataCart?.metadata?.rows?.[0]?.id || '',
+        }),
+      );
+
       showSuccessTop('Đăng nhập thành công');
       NavigationService.reset(RouteBottomTabsEnum.BottomTabs);
     } catch (error) {

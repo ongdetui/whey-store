@@ -5,6 +5,7 @@ export interface UserState {
   fullName: string;
   email: string;
   isLogin: boolean;
+  idCard: number;
 }
 
 const initialState: UserState = {
@@ -12,6 +13,7 @@ const initialState: UserState = {
   fullName: '',
   email: '',
   isLogin: false,
+  idCard: 0,
 };
 
 export const userSlice = createSlice({

@@ -8,14 +8,25 @@ import {FC, memo} from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {toPriceFormat} from 'utils/utils';
 
 interface IProps {
   url?: string;
+  name: string;
+  category_name: string;
+  price: number;
+  handleItem: () => void;
+  handleAddCart: () => void;
 }
 
-const ItemProduct: FC<IProps> = ({url}) => {
-  const handleItem = () =>
-    NavigationService.navigate(RouteAppEnum.DetailProductScreen);
+const ItemProduct: FC<IProps> = ({
+  url,
+  name,
+  category_name,
+  price,
+  handleItem,
+  handleAddCart,
+}) => {
   return (
     <TouchableOpacity
       onPress={handleItem}
@@ -31,12 +42,17 @@ const ItemProduct: FC<IProps> = ({url}) => {
       />
       <Block paddingHorizontal={12}>
         <Text fontFamily={Font.Poppins_SemiBold} numberOfLines={2}>
-          Nutrabolics Hydropure 100% Hydrolyzed Whey Protein 4.5lbs
+          {name}
         </Text>
-        <Text style={styles.category}>Whey protein</Text>
-        <Text style={styles.textPrice}>1.250.000đ</Text>
+        <Text numberOfLines={1} style={styles.category}>
+          {category_name}
+        </Text>
+        <Text style={styles.textPrice}>{toPriceFormat(price)}đ</Text>
       </Block>
-      <TouchableOpacity activeOpacity={0.5} style={styles.addCart}>
+      <TouchableOpacity
+        onPress={handleAddCart}
+        activeOpacity={0.5}
+        style={styles.addCart}>
         <Icon name={'cart-outline'} size={22} color={Colors.mainText} />
       </TouchableOpacity>
     </TouchableOpacity>

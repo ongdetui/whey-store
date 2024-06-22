@@ -1,13 +1,40 @@
 import {Block, Container} from '@components';
+import {useToastMessage} from '@hooks/useToastMessage';
+import NavigationService from '@navigation/navigationService';
+import {UserState} from '@redux/slices/user.slice';
+import {IRootState} from '@redux/stores';
+import {addCart, listOrderList} from '@services/cart.service';
 import Colors from 'configs/colors';
 import Font from 'configs/fonts';
 import {WIDTH_SCREEN, getSize} from 'configs/responsive';
+import {Product} from 'models/product';
+import {useState} from 'react';
 import {ScrollView, StyleSheet, Text, TouchableOpacity} from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
 import FastImage from 'react-native-fast-image';
-import NavigationService from '@navigation/navigationService';
+import Icon from 'react-native-vector-icons/Ionicons';
+import {useSelector} from 'react-redux';
+import {toPriceFormat} from 'utils/utils';
 
-const DetailProductScreen = () => {
+const DetailProductScreen = ({route}) => {
+  const product: Product = route.params;
+  const {showSuccessTop} = useToastMessage();
+  const {id} = useSelector<IRootState, UserState>(state => state.user);
+
+  const handleAddCart = async () => {
+    try {
+      const {data} = await listOrderList(id);
+      await addCart(
+        {
+          order_id: data?.metadata?.rows?.[0]?.id,
+          productId: product.id,
+          quantity: 1,
+        },
+        id,
+      );
+      showSuccessTop('Thêm thành công sản phẩm vào giỏ hàng');
+    } catch (error) {}
+  };
+
   return (
     <Container backgroundColor={Colors.bgBlur} edges={['top']}>
       <Block style={styles.tabBar}>
@@ -26,14 +53,12 @@ const DetailProductScreen = () => {
       <ScrollView style={styles.content}>
         <FastImage
           source={{
-            uri: 'https://wheyshop.cdn.vccloud.vn/wp-content/uploads/2022/03/vitaxtrong-iso-pro-5lbs-2-3kg-2-280x280.webp',
+            uri: JSON.parse(product.images)?.[0]?.url,
           }}
           style={styles.image}
         />
-        <Text style={styles.title}>
-          Rule1 Essential Amino 9 + Energy 30 servings
-        </Text>
-        <Text style={styles.textPrice}>680,000đ</Text>
+        <Text style={styles.title}>{product.name}</Text>
+        <Text style={styles.textPrice}>{toPriceFormat(product.price)}đ</Text>
         <Block
           flexDirection="row"
           alignItems="center"
@@ -57,38 +82,15 @@ const DetailProductScreen = () => {
           alignItems="center"
           marginBottom={12}
           marginTop={22}>
-          <TouchableOpacity style={styles.btnAddCart} activeOpacity={0.5}>
+          <TouchableOpacity
+            onPress={handleAddCart}
+            style={styles.btnAddCart}
+            activeOpacity={0.5}>
             <Text style={styles.textBtn}>Thêm vào giỏ</Text>
-          </TouchableOpacity>
-          <TouchableOpacity style={styles.btnBuyNow} activeOpacity={0.5}>
-            <Text style={styles.textBtn}>Mua hàng ngay</Text>
           </TouchableOpacity>
         </Block>
         <Text style={styles.title}>Mô tả sản phẩm</Text>
-        <Text style={styles.description}>
-          Rule1 Essential Amino 9 + Energy 30 servings là một trong những sản
-          phẩm bổ sung 9 loại amino acid thiết yếu, hỗ trợ phục hồi, tổng hợp
-          protein để xây dựng cơ bắp ưu việt hơn. Với công thức đột phá, hương
-          vị bùng nổ, sản phẩm này chắc chắn sẽ đem lại cho người dùng những
-          trải nghiệm tuyệt vời. Essential Amino 9 + Energy 30 được nghiên cứu
-          và sản xuất bởi hãng Rule One Proteins – thương hiệu thực phẩm bổ sung
-          đình đám tại Hoa Kỳ. Ưu điểm nổi bật Bổ sung hàm lượng axit amin đậm
-          đặc Một serving của Rule1 Essential Amino 9 + Energy chứa tới 7.5g EAA
-          và 5g BCAA. Đây là hàm lượng axit amin được đánh giá là cao hơn hẳn so
-          với các sản phẩm cùng phân khúc. Với 9 loại axit amin này có tác dụng
-          phục hồi cơ bắp, tái tạo mô cơ bắp hiệu quả để xây dựng phát triển cơ
-          bắp tối ưu hơn. Bổ sung thêm 500mg điện giải Thành phần có thêm 500mg
-          điện giải sẽ giúp bù nước, bù khoáng, cân bằng lượng nước có trong cơ
-          thể. Từ đó giúp cơ thể gia tăng thể lực và tăng sức bền hiệu quả hơn.
-          Công dụng Cung cấp, bổ sung nguồn axit amin thiết yếu cho cơ thể Hỗ
-          trợ tăng tổng hợp protein để nuôi và phát triển cơ bắp Hỗ trợ phục hồi
-          cơ bắp sau những buổi tập mệt mỏi Giảm đau nhức hiệu quả, gia tăng
-          hiệu suất tập luyện Bổ sung chất điện giải, bù nước, bù khoáng cho cơ
-          thể Hỗ trợ gia tăng sức bền Phòng ngừa dị hóa và mất cơ Hướng dẫn sử
-          dụng Pha 1 - 2 muỗng Rule1 Essential Amino 9 + Energy 30 với 500ml
-          nước và sử dụng ngay trong lúc tập để đạt hiệu quả tốt nhất. Có thể
-          dùng EAA Rule1 trước, sau tập hoặc bất kỳ thời gian nào trong ngày.
-        </Text>
+        <Text style={styles.description}>{product.description}</Text>
       </ScrollView>
     </Container>
   );

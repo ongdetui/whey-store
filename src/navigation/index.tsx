@@ -1,6 +1,15 @@
 import {NavigationContainer} from '@react-navigation/native';
 import {createNativeStackNavigator} from '@react-navigation/native-stack';
-import Test from '@screens/test';
+import {UserState} from '@redux/slices/user.slice';
+import {IRootState} from '@redux/stores';
+import LoginScreen from '@screens/auth/login';
+import SignUpScreen from '@screens/auth/signup';
+import SignUpSuccessScreen from '@screens/auth/signup/SignUpSuccessScreen';
+import FormPurchaseScreen from '@screens/cart/FormPurchaseScreen';
+import OrderSuccessScreen from '@screens/cart/OrderSuccessScreen';
+import DetailProductScreen from '@screens/products/DetailProductScreen';
+import {useSelector} from 'react-redux';
+import BottomTabs from './BottomTabs';
 import NavigationService from './navigationService';
 import {
   RootStackParamList,
@@ -8,15 +17,6 @@ import {
   RouteAuthEnum,
   RouteBottomTabsEnum,
 } from './route';
-import BottomTabs from './BottomTabs';
-import LoginScreen from '@screens/auth/login';
-import SignUpScreen from '@screens/auth/signup';
-import SignUpSuccessScreen from '@screens/auth/signup/SignUpSuccessScreen';
-import FormPurchaseScreen from '@screens/cart/FormPurchaseScreen';
-import DetailProductScreen from '@screens/products/DetailProductScreen';
-import {useSelector} from 'react-redux';
-import {IRootState} from '@redux/stores';
-import {UserState} from '@redux/slices/user.slice';
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
 
@@ -60,6 +60,10 @@ const RootStack = () => {
         <Stack.Screen
           name={RouteAppEnum.DetailProductScreen}
           component={DetailProductScreen}
+        />
+        <Stack.Screen
+          name={RouteAppEnum.OrderSuccessScreen}
+          component={OrderSuccessScreen}
         />
       </Stack.Navigator>
     </NavigationContainer>

@@ -14,3 +14,7 @@ export async function login({
 export async function register(body: SignUpParams) {
   return api('/access/signup', body);
 }
+
+export async function submitContact(body: any) {
+  return api('/userContact/create', body);
+}

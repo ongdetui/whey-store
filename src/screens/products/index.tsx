@@ -1,22 +1,80 @@
 import {Block, Container, Text} from '@components';
+import NavigationService from '@navigation/navigationService';
+import {RouteAppEnum, RouteAuthEnum} from '@navigation/route';
+import {UserState, actionLogout} from '@redux/slices/user.slice';
+import {IRootState} from '@redux/stores';
 import Colors from 'configs/colors';
 import Font from 'configs/fonts';
 import {getSize} from 'configs/responsive';
-import {Fragment, useCallback} from 'react';
+import {Fragment, useCallback, useState} from 'react';
 import {FlatList, StyleSheet, TextInput, TouchableOpacity} from 'react-native';
+import {Menu, MenuItem} from 'react-native-material-menu';
 import {useSafeAreaInsets} from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {useDispatch, useSelector} from 'react-redux';
 import {keyExtractor} from 'utils/utils';
 import ItemProduct from './components/ItemProduct';
-import {useSelector} from 'react-redux';
-import {IRootState} from '@redux/stores';
-import {UserState} from '@redux/slices/user.slice';
+import * as Keychain from 'react-native-keychain';
+import debounce from 'lodash';
+import useFetchListProduct from '@hooks/useFetchListProduct';
+import {Product} from 'models/product';
+import {addCart, createOrder, listOrderList} from '@services/cart.service';
+import {useToastMessage} from '@hooks/useToastMessage';
 
 const ProductsScreen = () => {
   const {top} = useSafeAreaInsets();
-  const {email} = useSelector<IRootState, UserState>(state => state.user);
+  const {email, id} = useSelector<IRootState, UserState>(state => state.user);
+  const [showMenu, setShowMenu] = useState<boolean>(false);
+  const [textSearch, setTextSearch] = useState<string>('');
+  const dispatch = useDispatch();
+  const {data} = useFetchListProduct({page: 1, name: textSearch});
+  const {showSuccessTop} = useToastMessage();
 
-  const renderItem = useCallback(({item}) => <ItemProduct url={item} />, []);
+  const handleAddCart = async (item: Product) => {
+    try {
+      const {data} = await listOrderList(id);
+
+      await addCart(
+        {
+          order_id: data?.metadata?.rows?.[0]?.id,
+          productId: item.id,
+          quantity: 1,
+        },
+        id,
+      );
+      showSuccessTop('Thêm thành công sản phẩm vào giỏ hàng');
+    } catch (error) {}
+  };
+
+  const renderItem = useCallback(
+    ({item}: {item: Product}) => (
+      <ItemProduct
+        url={JSON.parse(item.images)?.[0]?.url}
+        name={item.name}
+        category_name={item.category_name}
+        price={item.price}
+        handleItem={() => {
+          NavigationService.navigate(RouteAppEnum.DetailProductScreen, item);
+        }}
+        handleAddCart={() => handleAddCart(item)}
+      />
+    ),
+    [],
+  );
+
+  const hideMenu = () => setShowMenu(false);
+  const handleMenu = () => setShowMenu(true);
+
+  const handleLogout = () => {
+    setShowMenu(false);
+
+    setTimeout(async () => {
+      NavigationService.reset(RouteAuthEnum.LoginScreen);
+      await Keychain.resetInternetCredentials('JWT_KEY');
+      await Keychain.resetInternetCredentials('JWT_REFRESH_KEY');
+      dispatch(actionLogout());
+    }, 500);
+  };
 
   return (
     <Container backgroundColor={Colors.bgBlur} edges={[]}>
@@ -28,11 +86,23 @@ const ProductsScreen = () => {
                 <Text style={styles.textHello}>Hello,</Text>
                 <Text style={styles.textEmail}>{email}</Text>
               </Block>
-              <Icon
-                name={'person-circle-outline'}
-                color={Colors.bluePrimary}
-                size={getSize.m(32)}
-              />
+              <Menu
+                style={styles.menu}
+                visible={showMenu}
+                onRequestClose={hideMenu}
+                anchor={
+                  <TouchableOpacity onPress={handleMenu} activeOpacity={0.5}>
+                    <Icon
+                      name={'person-circle-outline'}
+                      color={Colors.bluePrimary}
+                      size={getSize.m(32)}
+                    />
+                  </TouchableOpacity>
+                }>
+                <MenuItem onPress={handleLogout}>
+                  <Text style={styles.textMenu}>Logout</Text>
+                </MenuItem>
+              </Menu>
             </Block>
             <Block style={styles.search}>
               <Block flexDirection="row" alignItems="center" flex={1}>
@@ -45,6 +115,7 @@ const ProductsScreen = () => {
                   style={styles.inputSearch}
                   placeholderTextColor={'#00000080'}
                   placeholder="Whey protein..."
+                  onChangeText={debounce.debounce(setTextSearch, 200)}
                 />
               </Block>
               <TouchableOpacity activeOpacity={0.5}>
@@ -58,12 +129,7 @@ const ProductsScreen = () => {
           </Fragment>
         }
         keyExtractor={keyExtractor}
-        data={[
-          'https://wheyshop.cdn.vccloud.vn/wp-content/uploads/2022/03/vitaxtrong-iso-pro-5lbs-2-3kg-2-280x280.webp',
-          'https://wheyshop.cdn.vccloud.vn/wp-content/uploads/2022/02/vitaxtrong-100-pure-creatine-5000-500g-280x280.webp',
-          'https://wheyshop.cdn.vccloud.vn/wp-content/uploads/2016/10/biotech-hyper-mass-8-8lbs-4kg-280x280.webp',
-          'https://wheyshop.cdn.vccloud.vn/wp-content/uploads/2016/10/pre-workout-the-curse-280x280.webp',
-        ]}
+        data={data}
         renderItem={renderItem}
         numColumns={2}
         contentContainerStyle={styles.contentContainerStyle}
@@ -108,6 +174,13 @@ const styles = StyleSheet.create({
   },
   contentContainerStyle: {
     paddingHorizontal: getSize.s(6),
+  },
+  menu: {
+    marginTop: 40,
+  },
+  textMenu: {
+    fontFamily: Font.Poppins_SemiBold,
+    fontSize: 16,
   },
 });
 

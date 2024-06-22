@@ -2,42 +2,53 @@ import {Block, Text} from '@components';
 import Colors from 'configs/colors';
 import Font from 'configs/fonts';
 import {WIDTH_SCREEN, getSize} from 'configs/responsive';
+import {FC} from 'react';
 import {StyleSheet, TouchableOpacity} from 'react-native';
 import FastImage from 'react-native-fast-image';
 import Icon from 'react-native-vector-icons/Ionicons';
+import {toPriceFormat} from 'utils/utils';
 
-const ItemCart = () => {
+interface IProps {
+  name: string;
+  url?: string;
+  price: number;
+  quantity: number;
+  handleRemove: () => void;
+}
+
+const ItemCart: FC<IProps> = ({name, url, price, handleRemove}) => {
   return (
     <Block style={styles.container}>
-      <TouchableOpacity style={styles.btnCheck} activeOpacity={0.5}>
+      {/* <TouchableOpacity style={styles.btnCheck} activeOpacity={0.5}>
         <Icon name={'checkmark'} color={Colors.bluePrimary} size={18} />
-      </TouchableOpacity>
+      </TouchableOpacity> */}
       <FastImage
         source={{
-          uri: 'https://wheyshop.cdn.vccloud.vn/wp-content/uploads/2022/03/vitaxtrong-iso-pro-5lbs-2-3kg-2-280x280.webp',
+          uri: url,
         }}
         style={styles.image}
       />
       <Block flex={1}>
-        <Text>
-          Rule1 Essential Amino 9 + Energy 30 servings Blue Razz Lemonde
-        </Text>
+        <Text>{name}</Text>
         <Block
           marginTop={getSize.m(20)}
           flexDirection="row"
           justifyContent="space-between"
           alignItems="center">
-          <Text style={styles.textPrice}>430.000đ</Text>
+          <Text style={styles.textPrice}>{toPriceFormat(price)}đ</Text>
           <Block flexDirection="row" alignItems="center">
-            <TouchableOpacity style={styles.btnLess} activeOpacity={0.5}>
+            <TouchableOpacity onPress={handleRemove}>
+              <Icon name={'trash-outline'} color={Colors.black} size={22} />
+            </TouchableOpacity>
+            {/* <TouchableOpacity style={styles.btnLess} activeOpacity={0.5}>
               <Text>-</Text>
             </TouchableOpacity>
             <Block style={styles.btnAmount}>
-              <Text>1</Text>
+              <Text>{quantity}</Text>
             </Block>
             <TouchableOpacity style={styles.btnPlus} activeOpacity={0.5}>
               <Text>+</Text>
-            </TouchableOpacity>
+            </TouchableOpacity> */}
           </Block>
         </Block>
       </Block>

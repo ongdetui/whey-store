@@ -1,3 +1,5 @@
+import {Product} from 'models/product';
+
 export enum RouteAuthEnum {
   LoginScreen = 'LoginScreen',
   SignUpScreen = 'SignUpScreen',
@@ -14,6 +16,7 @@ export enum RouteBottomTabsEnum {
 export enum RouteAppEnum {
   FormPurchaseScreen = 'FormPurchaseScreen',
   DetailProductScreen = 'DetailProductScreen',
+  OrderSuccessScreen = 'OrderSuccessScreen',
 }
 
 export type RootStackParamList = {
@@ -23,5 +26,6 @@ export type RootStackParamList = {
   [RouteBottomTabsEnum.BottomTabs]: {};
   [RouteBottomTabsEnum.BottomTabs]: {};
   [RouteAppEnum.FormPurchaseScreen]: {};
-  [RouteAppEnum.DetailProductScreen]: {};
+  [RouteAppEnum.DetailProductScreen]: Product;
+  [RouteAppEnum.OrderSuccessScreen]: {};
 };

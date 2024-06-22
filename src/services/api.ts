@@ -7,7 +7,7 @@ const getAxiosInstance = async () => {
   const credentials = await Keychain.getInternetCredentials('JWT_KEY');
 
   if (credentials && credentials.password) {
-    axios.defaults.headers.common.Authorization = `Bearer ${credentials.password}`;
+    axios.defaults.headers.Authorization = `${credentials.password}`;
   }
 
   const axiosInstance = axios.create({
